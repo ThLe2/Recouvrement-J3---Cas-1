@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Étude de cas n°1 — TMK Performances</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  :root {
+    --purple: #533AB7;
+    --purple-dark: #3C3489;
+    --purple-light: #EEEDFE;
+    --purple-mid: #AFA9EC;
+    --green: #3B6D11;
+    --green-light: #EAF3DE;
+    --green-border: #97C459;
+    --red: #A32D2D;
+    --red-light: #FCEBEB;
+    --red-border: #F09595;
+    --amber: #854F0B;
+    --amber-light: #FAEEDA;
+    --text: #1a1a2e;
+    --text-muted: #6b6b80;
+    --border: rgba(0,0,0,0.1);
+    --bg: #f7f6fb;
+    --card: #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 4rem;
+  }
+
+  /* ---- HERO HEADER ---- */
+  .hero {
+    background: var(--purple-dark);
+    padding: 2.5rem 1.5rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -80px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: -40px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+  }
+  .hero-inner { max-width: 780px; margin: 0 auto; position: relative; z-index: 1; }
+  .logo-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.9);
+    font-size: 12px; font-weight: 500;
+    padding: 5px 14px; border-radius: 20px;
+    margin-bottom: 1.2rem;
+    letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(22px, 4vw, 30px);
+    color: #fff;
+    line-height: 1.3;
+    margin-bottom: 0.6rem;
+  }
+  .hero p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    max-width: 540px;
+  }
+
+  /* ---- LAYOUT ---- */
+  .main { max-width: 780px; margin: 0 auto; padding: 1.5rem 1rem; }
+
+  /* ---- CARDS ---- */
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    padding: 1.4rem 1.5rem;
+    margin-bottom: 1.2rem;
+    transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: 0 4px 20px rgba(83,58,183,0.07); }
+
+  .card-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 1.1rem;
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--purple-light);
+    color: var(--purple);
+    font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .card-header h2 {
+    font-size: 15px; font-weight: 600;
+    color: var(--purple-dark);
+  }
+
+  /* ---- IDENTITY GRID ---- */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media(max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  label { font-size: 12px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; }
+  input[type="text"], input[type="number"], textarea {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 9px 13px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fafafa;
+    color: var(--text);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    width: 100%;
+  }
+  input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+    outline: none;
+    border-color: var(--purple-mid);
+    box-shadow: 0 0 0 3px rgba(83,58,183,0.08);
+    background: #fff;
+  }
+  textarea { min-height: 140px; resize: vertical; line-height: 1.65; }
+
+  /* ---- CONTEXT GRID ---- */
+  .ctx-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 10px;
+    margin: 1rem 0;
+  }
+  .ctx-item {
+    background: #f8f7fd;
+    border: 1px solid rgba(83,58,183,0.08);
+    border-radius: 10px;
+    padding: 10px 13px;
+  }
+  .ctx-label { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .ctx-val { font-size: 15px; font-weight: 600; }
+  .ctx-val.neg { color: var(--red); }
+  .ctx-val.pos { color: var(--green); }
+  .ctx-val.neutral { color: var(--purple-dark); }
+
+  .prose { font-size: 13.5px; line-height: 1.75; color: #3a3a50; }
+  .prose strong { color: var(--text); font-weight: 600; }
+
+  .highlight {
+    background: var(--purple-light);
+    border-left: 3px solid var(--purple);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    margin: 12px 0 0;
+    font-size: 13px;
+    color: var(--purple-dark);
+    line-height: 1.6;
+  }
+  .highlight strong { font-weight: 600; }
+
+  hr { border: none; border-top: 1px solid #f0eef8; margin: 1rem 0; }
+
+  /* ---- BUTTONS ---- */
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px; font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+  .btn-primary {
+    background: var(--purple);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--purple-dark); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  /* ---- FEEDBACK ---- */
+  .feedback {
+    font-size: 13px;
+    padding: 11px 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+    display: none;
+    line-height: 1.6;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok { background: var(--green-light); color: var(--green); border: 1px solid var(--green-border); }
+  .feedback.ko { background: var(--red-light); color: var(--red); border: 1px solid var(--red-border); }
+  .feedback.warn { background: var(--amber-light); color: var(--amber); border: 1px solid #FAC775; }
+
+  /* ---- SECTION HIDDEN ---- */
+  .hidden { display: none; }
+
+  /* ---- SUCCESS FINAL ---- */
+  .success-final {
+    text-align: center;
+    background: var(--green-light);
+    border: 1px solid var(--green-border);
+    border-radius: 14px;
+    padding: 2.5rem 1.5rem;
+    display: none;
+  }
+  .success-final .icon { font-size: 40px; margin-bottom: 1rem; }
+  .success-final h2 { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--green); margin-bottom: 0.5rem; }
+  .success-final p { font-size: 14px; color: var(--green); opacity: 0.85; }
+
+  /* ---- LOADING SPINNER ---- */
+  .spinner {
+    display: inline-block; width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .sending-msg { display: none; font-size: 13px; color: var(--text-muted); margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="logo-badge">TMK Performances · Formation</div>
+    <h1>Étude de cas n°1<br>Découvert prolongé &amp; IJ en baisse</h1>
+    <p>Analysez la situation de Mme Carpentier et répondez aux questions ci-dessous.</p>
+  </div>
+</div>
+
+<main class="main">
+
+  <!-- IDENTITÉ -->
+  <div class="card">
+    <div class="card-header">
+      <div class="step-num">✦</div>
+      <h2>Votre identité</h2>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="prenom">Prénom</label>
+        <input type="text" id="prenom" placeholder="Votre prénom">
+      </div>
+      <div class="form-group">
+        <label for="nom">Nom</label>
+        <input type="text" id="nom" placeholder="Votre nom">
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTEXTE -->
+  <div class="card">
+    <div class="card-header">
+      <div class="step-num">1</div>
+      <h2>Contexte de la situation</h2>
+    </div>
+    <p class="prose">
+      <strong>Mme Caroline Carpentier</strong>, 48 ans, vit seule avec sa fille de 17 ans (classe de première).
+      Aide-soignante depuis 12 ans dans un EHPAD, elle est en <strong>arrêt maladie depuis 3 mois</strong>
+      suite à un accident de manipulation. Ses indemnités journalières sont notablement inférieures à son salaire habituel.
+    </p>
+    <div class="ctx-grid">
+      <div class="ctx-item">
+        <div class="ctx-label">Salaire habituel</div>
+        <div class="ctx-val pos">1 650 € nets</div>
+      </div>
+      <div class="ctx-item">
+        <div class="ctx-label">Revenus actuels (IJ)</div>
+        <div class="ctx-val neg">1 050 €</div>
+      </div>
+      <div class="ctx-item">
+        <div class="ctx-label">APL perçues</div>
+        <div class="ctx-val neutral">140 €</div>
+      </div>
+      <div class="ctx-item">
+        <div class="ctx-label">Budget mensuel total</div>
+        <div class="ctx-val neutral">1 190 €</div>
+      </div>
+      <div class="ctx-item">
+        <div class="ctx-label">Pension alimentaire</div>
+        <div class="ctx-val neg">0 € (impayée 8 mois)</div>
+      </div>
+      <div class="ctx-item">
+        <div class="ctx-label">Loyer</div>
+        <div class="ctx-val neg">620 €</div>
+      </div>
+      <div class="ctx-item">
+        <div class="ctx-label">Crédit conso (élect.)</div>
+        <div class="ctx-val neg">68 €/mois impayé</div>
+      </div>
+      <div class="ctx-item">
+        <div class="ctx-label">Découvert autorisé</div>
+        <div class="ctx-val neutral">300 €</div>
+      </div>
+      <div class="ctx-item">
+        <div class="ctx-label">Solde bancaire actuel</div>
+        <div class="ctx-val neg">– 720 €</div>
+      </div>
+      <div class="ctx-item">
+        <div class="ctx-label">Frais d'incidents (mois)</div>
+        <div class="ctx-val neg">56 €</div>
+      </div>
+    </div>
+    <div class="highlight">
+      Caroline dispose d'un <strong>Livret A de 200 €</strong>, bloqué tant que le compte est négatif.
+      Elle est en découvert depuis <strong>29 jours consécutifs</strong>.
+    </div>
+  </div>
+
+  <!-- QUESTION 1 — MONTANT -->
+  <div class="card" id="section-q1">
+    <div class="card-header">
+      <div class="step-num">2</div>
+      <h2>Question 1 — Montant du dépassement</h2>
+    </div>
+    <p class="prose" style="margin-bottom: 1rem;">
+      En vous appuyant sur les éléments ci-dessus, indiquez le <strong>montant du dépassement de découvert</strong>
+      (somme au-delà du découvert autorisé de 300 €).
+    </p>
+    <div class="form-group" style="max-width: 220px;">
+      <label for="montant">Votre réponse (en €)</label>
+      <input type="number" id="montant" placeholder="ex : 350" min="0">
+    </div>
+    <br>
+    <button class="btn btn-primary" onclick="verifierDette()">Valider ma réponse</button>
+    <div class="feedback" id="fb-q1"></div>
+  </div>
+
+  <!-- QUESTION 2 — PROPOSITIONS (toujours visible après la Q1) -->
+  <div class="card hidden" id="section-q2">
+    <div class="card-header">
+      <div class="step-num">3</div>
+      <h2>Question 2 — Propositions à court terme</h2>
+    </div>
+    <p class="prose" style="margin-bottom: 1rem;">
+      Quelles <strong>actions ou solutions</strong> proposeriez-vous à Mme Carpentier pour l'aider à court terme ?
+      Soyez précis et détaillez chacune de vos propositions.
+    </p>
+    <div class="form-group">
+      <label for="propositions">Vos propositions</label>
+      <textarea id="propositions" placeholder="Décrivez ici vos propositions à court terme pour aider Mme Carpentier…"></textarea>
+    </div>
+    <br>
+    <button class="btn btn-primary" id="btn-envoyer" onclick="envoyerFormulaire()">
+      Envoyer mes réponses
+    </button>
+    <div class="sending-msg" id="sending-msg"><span class="spinner"></span>&nbsp; Envoi en cours…</div>
+    <div class="feedback" id="fb-envoi"></div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="success-final" id="success-final">
+    <div class="icon">✓</div>
+    <h2>Réponses envoyées !</h2>
+    <p>Vos réponses ont bien été transmises à votre formateur.<br>Merci pour votre participation.</p>
+  </div>
+
+</main>
+
+<script>
+  // ── EmailJS init ──────────────────────────────────────────────
+  // Remplacez les valeurs ci-dessous par vos identifiants EmailJS
+  const EJS_PUBLIC_KEY  = 'djBsGZy3aHvhwncyW';   // ex: 'abc123XYZ'
+  const EJS_SERVICE_ID  = 'service_tn53slv';   // ex: 'service_xxxxxx'
+  const EJS_TEMPLATE_ID = 'template_pqxsd96';  // ex: 'template_xxxxxx'
+
+  emailjs.init({ publicKey: EJS_PUBLIC_KEY });
+
+  // ── Vérification Q1 ──────────────────────────────────────────
+  const BONNE_REPONSE = 420;
+
+  function verifierDette() {
+    const val = parseFloat(document.getElementById('montant').value);
+    const fb  = document.getElementById('fb-q1');
+
+    if (isNaN(val) || val <= 0) {
+      showFb(fb, 'ko', 'Merci de saisir un montant valide.');
+      return;
+    }
+
+    if (val === BONNE_REPONSE) {
+      showFb(fb, 'ok',
+        '<strong>Bonne réponse !</strong> Le dépassement est bien de <strong>420 €</strong>. ' +
+        'Le compte affiche –720 € pour un découvert autorisé de 300 €, soit 720 – 300 = 420 € de dépassement.');
+    } else {
+      const hint = val < BONNE_REPONSE
+        ? 'Votre montant est inférieur à la réalité.'
+        : 'Votre montant est supérieur à la réalité.';
+      showFb(fb, 'ko',
+        '<strong>Réponse incorrecte.</strong> ' + hint +
+        ' Rappel : solde = –720 €, découvert autorisé = 300 €. ' +
+        'Dépassement = 720 – 300 = <strong>420 €</strong>.');
+    }
+
+    // Dans tous les cas, on affiche la Q2 après validation
+    document.getElementById('section-q2').classList.remove('hidden');
+    setTimeout(() => {
+      document.getElementById('section-q2').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
+  }
+
+  // ── Envoi EmailJS ────────────────────────────────────────────
+  async function envoyerFormulaire() {
+    const prenom       = document.getElementById('prenom').value.trim();
+    const nom          = document.getElementById('nom').value.trim();
+    const montant      = document.getElementById('montant').value.trim();
+    const propositions = document.getElementById('propositions').value.trim();
+    const fb           = document.getElementById('fb-envoi');
+
+    if (!prenom || !nom) {
+      showFb(fb, 'ko', 'Merci de renseigner votre prénom et nom en haut du formulaire.');
+      return;
+    }
+    if (!propositions) {
+      showFb(fb, 'ko', 'Merci de rédiger vos propositions avant d\'envoyer.');
+      return;
+    }
+
+    const btn = document.getElementById('btn-envoyer');
+    btn.disabled = true;
+    btn.textContent = 'Envoi…';
+    document.getElementById('sending-msg').style.display = 'block';
+    fb.className = 'feedback'; fb.style.display = 'none';
+
+    try {
+      await emailjs.send(EJS_SERVICE_ID, EJS_TEMPLATE_ID, {
+        stagiaire_prenom : prenom,
+        stagiaire_nom    : nom,
+        montant_dette    : montant + ' €',
+        propositions     : propositions,
+        to_email         : 'thierry.ledeux@tmk-performances.fr',
+        reply_to         : 'thierry.ledeux@tmk-performances.fr',
+      });
+
+      document.getElementById('sending-msg').style.display = 'none';
+      document.getElementById('section-q1').style.display  = 'none';
+      document.getElementById('section-q2').style.display  = 'none';
+      document.getElementById('success-final').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } catch (err) {
+      document.getElementById('sending-msg').style.display = 'none';
+      btn.disabled = false; btn.textContent = 'Envoyer mes réponses';
+      showFb(fb, 'ko',
+        'L\'envoi a échoué. Vérifiez votre connexion ou contactez votre formateur. (Erreur : ' + (err.text || err) + ')');
+    }
+  }
+
+  // ── Helper ───────────────────────────────────────────────────
+  function showFb(el, type, html) {
+    el.className = 'feedback ' + type + ' show';
+    el.innerHTML = html;
+  }
+</script>
+</body>
+</html>
